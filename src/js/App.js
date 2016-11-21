@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
 import { Text,View,TouchableHighlight } from 'react-native';
+import { Navigator } from 'react-native';
+
+import IndexScene from '../../inicio';
+import PartidaScene from '../../partida';
 
 //import { PageHeader } from 'react-bootstrap';
 //import { Button } from 'react-bootstrap';
@@ -77,20 +81,38 @@ var App = React.createClass({
     },
 
     render: function() {
-        var texto = this.state.turno.text ? "Turno del " + this.state.turno.text : "" + this.state.turno;
+        //var texto = this.state.turno.text ? "Turno del " + this.state.turno.text : "" + this.state.turno;
+        const routes = [
+            {title: 'Index', index: 0},
+            {title: 'Partida', index: 1},
+        ];
         return (
-                <View style={{flex:1, margin:10}}>
-                
-
-                <Text>Tres En Raya-IWEB</Text>
-                <Cabecera texto={texto}/>
-                <Tablero valores={this.state.valores} manejadorTableroClick={this.appClick} fin={this.state.fin} style={{width: '300px', marginLeft: '10px'}}/>
-                <TouchableHighlight onPress={this.reiniciar}>
-                 <Text>Reiniciar Partida</Text> 
-                </TouchableHighlight>
-                <Marcador jugadores={jugadores}/>
-              </View>
-        )
+            <Navigator
+            initialRoute={routes[0]}
+            initialRouteStack={routes}
+            renderScene={(route, navigator) => {
+                var onForward = function(){
+                    const nextIndex = route.index + 1;
+                    this.reiniciar
+                    if(typeof routes[nextIndex] == "object"){
+                        this.reiniciar
+                        navigator.push(routes[nextIndex])
+                    }
+                }
+                var onBack = function(){
+                    if (route.index > 0){
+                        navigator.pop();
+                    }
+                }
+                switch(route.index){
+                    case 0:
+                        return <IndexScene onForward={onForward} onBack={onBack} />
+                    case 1:
+                        return <PartidaScene onForward={onForward} onBack={onBack} state={this.state} manejadorTableroClick={this.appClick} reiniciar={this.reiniciar} />
+                }
+            }}
+            />
+        );
     }
 });
 
