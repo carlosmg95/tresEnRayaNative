@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text,View,TouchableHighlight } from 'react-native';
+import { Text,View,TouchableHighlight, AsyncStorage } from 'react-native';
 import { Navigator } from 'react-native';
 
 import IndexScene from '../../inicio';
@@ -79,6 +79,27 @@ var App = React.createClass({
             fin: false
         });
     },
+    guardar: async function() {
+        try {
+            await AsyncStorage.setItem('@Store:estado', JSON.stringify(this.state));
+            alert('guardado con exito');
+        } catch (error) {
+            alert('fallo al guardar');
+        }
+    },
+    retomar: async function() {
+        try {
+            const value = await AsyncStorage.getItem('@Store:estado');
+            if (value !== null){
+            // We have data!!
+            var state = JSON.parse(value);
+            this.setState(state);
+            }
+        } catch (error) {
+             // Error retrieving data
+             alert(error);
+        }
+    },
 
     render: function() {
         //var texto = this.state.turno.text ? "Turno del " + this.state.turno.text : "" + this.state.turno;
@@ -108,7 +129,7 @@ var App = React.createClass({
                     case 0:
                         return <IndexScene onForward={onForward} onBack={onBack} />
                     case 1:
-                        return <PartidaScene onForward={onForward} onBack={onBack} state={this.state} manejadorTableroClick={this.appClick} reiniciar={this.reiniciar} />
+                        return <PartidaScene onForward={onForward} onBack={onBack} state={this.state} manejadorTableroClick={this.appClick} reiniciar={this.reiniciar} guardar={this.guardar} retomar={this.retomar} />
                 }
             }}
             />

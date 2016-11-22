@@ -17,6 +17,12 @@ var PartidaScene = React.createClass({
 				<TouchableHighlight onPress={this.props.reiniciar}>
                 	<Text>Reiniciar Partida</Text> 
                 </TouchableHighlight>
+                <TouchableHighlight onPress={this.props.guardar}>
+                	<Text>Guardar Partida</Text> 
+                </TouchableHighlight>
+                <TouchableHighlight onPress={this.props.retomar}>
+                	<Text>Continuar Partida Guardada</Text> 
+                </TouchableHighlight>
 				<MyButton onPress={this.props.onBack}  text={"Volver"} />
 			</View>
 		)
