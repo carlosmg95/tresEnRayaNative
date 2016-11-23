@@ -46,6 +46,11 @@ var App = React.createClass({
         };
     },
 
+    rowShouldUpdate: function(sectionIndex, rowIndex) {
+        console.log(sectionIndex);
+        console.log(rowIndex);
+    },
+
     componentDidMount: function() {
         const actions = [];
         dataSource= this.state.dataSource.cloneWithRows(actions);
@@ -125,8 +130,12 @@ var App = React.createClass({
         try {
             const value = await AsyncStorage.getItem('@Store:estado');
             if (value !== null){
-                // We have data!! 
-                var state = JSON.parse(value);
+                // We have data!!                
+                let state = JSON.parse(value);                
+                let actions = state.dataSource._dataBlob.s1;
+                dataSource = this.state.dataSource.cloneWithRows(actions);
+                this.setState({dataSource: dataSource});
+                delete state.dataSource;
                 this.setState(state);
             }
         } catch (error) {
