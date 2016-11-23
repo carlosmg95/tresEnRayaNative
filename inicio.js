@@ -5,8 +5,14 @@ import MyButton from './src/js/MyButton';
 var IndexScene = React.createClass({
 	render: function(){
 		return (
-			<View>
-				<MyButton onPress={this.props.onForward}  text={"Iniciar partida"} />
+			<View style={{
+				flex:1,
+				flexDirection:'column',
+				alignItems:'center',
+				justifyContent:'center',
+			}}
+			>
+				<MyButton  onPress={this.props.onForward}  text={"Iniciar partida"} />
 			</View>
 		)
 	}

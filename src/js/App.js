@@ -104,12 +104,13 @@ var App = React.createClass({
     reiniciar: function() {
         JUGADORX.points = 0;
         JUGADOR0.points = 0;
-        this._reiniciaDataSource();
         this.setState({
             turno: JUGADORX,
             valores: [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']],
-            fin: false
+            fin: false,
+         
         });
+        this._reiniciaDataSource();
     },
 
     guardar: async function() {
@@ -124,13 +125,14 @@ var App = React.createClass({
         try {
             const value = await AsyncStorage.getItem('@Store:estado');
             if (value !== null){
-            // We have data!!
-            var state = JSON.parse(value);
-            this.setState(state);
+                // We have data!! 
+                var state = JSON.parse(value);
+                this.setState(state);
             }
         } catch (error) {
              // Error retrieving data
              alert('error al recuperar partida');
+             alert(error);
         }
     },
 
