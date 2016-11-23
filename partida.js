@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { View,TouchableHighlight,Text } from 'react-native';
 import MyButton from './src/js/MyButton';
-import App from './src/js/App';
 
 const Cabecera = require('./src/js/Cabecera');
 const Tablero = require('./src/js/Tablero');
@@ -13,7 +12,7 @@ var PartidaScene = React.createClass({
 		return (
 			<View style={{flex: 1, margin: 10}}>
 				<Cabecera texto={texto}/>
-				<Tablero valores={state.valores} manejadorTableroClick={this.props.manejadorTableroClick} fin={state.fin} />
+				<Tablero valores={state.valores} name={state.turno.name} manejadorTableroClick={this.props.manejadorTableroClick} fin={state.fin} />
 				<TouchableHighlight onPress={this.props.reiniciar}>
                 	<Text>Reiniciar Partida</Text> 
                 </TouchableHighlight>
@@ -23,6 +22,7 @@ var PartidaScene = React.createClass({
                 <TouchableHighlight onPress={this.props.retomar}>
                 	<Text>Continuar Partida Guardada</Text> 
                 </TouchableHighlight>
+                <MyButton onPress={this.props.onForward}  text={"Ver Historial"} />
 				<MyButton onPress={this.props.onBack}  text={"Volver"} />
 			</View>
 		)

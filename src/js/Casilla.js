@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, TouchableHighlight } from 'react-native';
+import { StyleSheet, Text, TouchableHighlight,AsyncStorage } from 'react-native';
 
 //import { Button } from 'react-bootstrap';
 
@@ -18,9 +18,9 @@ const styles = StyleSheet.create({
 });
 
 let Casilla = React.createClass({
-   _casillaClick: function () {
+   _casillaClick: async function () {
         if(this.props.valor === "-" && !this.props.fin) {
-            this.props.manejadorClick(this.props.indiceFila, this.props.indiceColumna);
+         this.props.manejadorClick(this.props.indiceFila, this.props.indiceColumna);
         }
     },
     

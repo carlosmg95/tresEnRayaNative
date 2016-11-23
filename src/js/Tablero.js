@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View,AsyncStorage } from 'react-native';
 
 var Casilla = require("./Casilla.js");
 
@@ -26,7 +26,7 @@ var Tablero = React.createClass({
             let fila = valoresFila.map(function(valor, indiceColumna) {
                 let myKey = "" + indiceFila + indiceColumna;
                 return (
-                    <Casilla valor={valor} indiceFila={indiceFila} indiceColumna={indiceColumna} key={myKey} fin={this.props.fin} manejadorClick={this.tableroClick}/>
+                    <Casilla valor={valor} indiceFila={indiceFila} indiceColumna={indiceColumna} key={myKey} fin={this.props.fin} name={this.props.name} manejadorClick={this.tableroClick}/>
                 )
             }, this);
             return (

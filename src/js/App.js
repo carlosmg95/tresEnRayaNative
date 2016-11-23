@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { Text,View,TouchableHighlight, AsyncStorage } from 'react-native';
+import { Text,View,TouchableHighlight, AsyncStorage,ListView } from 'react-native';
 import { Navigator } from 'react-native';
 
 import IndexScene from '../../inicio';
 import PartidaScene from '../../partida';
+import RecordScene from '../../historial';
 
 //import { PageHeader } from 'react-bootstrap';
 //import { Button } from 'react-bootstrap';
@@ -12,6 +13,7 @@ const Cabecera = require("./Cabecera");
 const Tablero = require("./Tablero");
 const Marcador = require("./Marcador");
 
+let n=0;
 let JUGADORX = {name: "JUGADORX", text: "jugador 1 - las X", points: 0};
 let JUGADOR0 = {name: "JUGADOR0", text: "jugador 0 - los 0", points: 0};
 const VALORES = [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']];
@@ -35,11 +37,19 @@ var diagonal = function(valores) {
 
 var App = React.createClass({
     getInitialState: function() {
+        const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         return {
             turno: JUGADORX,
             valores: VALORES,
-            fin: false
+            fin: false,
+            dataSource: ds
         };
+    },
+
+    componentDidMount: function() {
+        const actions = [];
+        dataSource= this.state.dataSource.cloneWithRows(actions);
+        this.setState({dataSource: dataSource});
     },
 
     ganador: function(valores, numeroFila, numeroColumna) {
@@ -58,35 +68,58 @@ var App = React.createClass({
         }
     },
 
-    appClick: function(numeroFila, numeroColumna) {
+    _getActionsFromDataSource: function() {
+        let actions = [];
+        for(var i=0; i<this.state.dataSource.getRowCount(); i++){
+            actions.push(this.state.dataSource.getRowData(0,i));
+        }
+        return actions;
+    },
+
+    appClick: async function(numeroFila, numeroColumna) {
         let valores = this.state.valores;
         let nuevoValor = (this.state.turno === JUGADORX) ? 'X' : '0';
+        let action = 'Jugador de las ' + nuevoValor + ' seleccionó la casilla [' + numeroFila + ',' + numeroColumna + ']';
+        let actions = this._getActionsFromDataSource();
+        actions.push(action);
+        dataSource = this.state.dataSource.cloneWithRows(actions);
+
         valores[numeroFila][numeroColumna] = nuevoValor;
+
         this.state.turno.points++;
         this.setState({
             turno: (this.state.turno === JUGADORX) ? JUGADOR0 : JUGADORX,
-            valores: this.state.valores
+            valores: this.state.valores,
+            dataSource: dataSource
         });
         this.ganador(valores, numeroFila, numeroColumna);
+    },
+
+    _reiniciaDataSource: function() {
+        actions = [];
+        dataSource = this.state.dataSource.cloneWithRows(actions);
+        this.setState({dataSource: dataSource});
     },
 
     reiniciar: function() {
         JUGADORX.points = 0;
         JUGADOR0.points = 0;
+        this._reiniciaDataSource();
         this.setState({
             turno: JUGADORX,
             valores: [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']],
             fin: false
         });
     },
+
     guardar: async function() {
         try {
             await AsyncStorage.setItem('@Store:estado', JSON.stringify(this.state));
-            alert('guardado con exito');
         } catch (error) {
             alert('fallo al guardar');
         }
     },
+
     retomar: async function() {
         try {
             const value = await AsyncStorage.getItem('@Store:estado');
@@ -97,8 +130,17 @@ var App = React.createClass({
             }
         } catch (error) {
              // Error retrieving data
-             alert(error);
+             alert('error al recuperar partida');
         }
+    },
+
+ 
+    _renderRow: function(action) {
+        return(
+            <View style={{flexDirection: 'row'}}>
+                <Text tyle={{fontsize: 30}}>{action}</Text>
+            </View>
+        )
     },
 
     render: function() {
@@ -106,6 +148,7 @@ var App = React.createClass({
         const routes = [
             {title: 'Index', index: 0},
             {title: 'Partida', index: 1},
+            {title: 'Historial', index:2}
         ];
         return (
             <Navigator
@@ -114,9 +157,7 @@ var App = React.createClass({
             renderScene={(route, navigator) => {
                 var onForward = function(){
                     const nextIndex = route.index + 1;
-                    this.reiniciar
                     if(typeof routes[nextIndex] == "object"){
-                        this.reiniciar
                         navigator.push(routes[nextIndex])
                     }
                 }
@@ -130,6 +171,8 @@ var App = React.createClass({
                         return <IndexScene onForward={onForward} onBack={onBack} />
                     case 1:
                         return <PartidaScene onForward={onForward} onBack={onBack} state={this.state} manejadorTableroClick={this.appClick} reiniciar={this.reiniciar} guardar={this.guardar} retomar={this.retomar} />
+                    case 2:
+                        return <RecordScene onForward={onForward} onBack={onBack} renderRow={this._renderRow} state={this.state}/>
                 }
             }}
             />
